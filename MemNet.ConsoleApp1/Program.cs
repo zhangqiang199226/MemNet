@@ -17,14 +17,17 @@ services.AddMemNet(config =>
     config.LLM.ApiKey = Environment.GetEnvironmentVariable("OpenAIChatKey");
 
     config.EnableReranking = true;
-}).WithChroma();
+    config.VectorStore.Endpoint = "http://localhost:6333";
+}).WithQdrant();
+    /*
+    .WithChroma();
 services.Configure<ChromaVectorStoreConfig>(e =>
 {
     e.Endpoint = "http://localhost:8000";
     e.CollectionId = "a9e2f1f4-e2bf-4e86-bcda-115af5fe9b3b";
     e.Database = "default";
     e.Tenant = "default";
-});
+});*/
 
 await using var sp = services.BuildServiceProvider();
 var memoryService = sp.GetRequiredService<IMemoryService>();

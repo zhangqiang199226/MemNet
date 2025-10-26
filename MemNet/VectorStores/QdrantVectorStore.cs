@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MemNet.Abstractions;
 using MemNet.Config;
+using MemNet.Internals;
 using MemNet.Models;
 using Microsoft.Extensions.Options;
 
@@ -37,37 +38,6 @@ public class QdrantVectorStore : IVectorStore
         if (!string.IsNullOrEmpty(_config.ApiKey))
         {
             _httpClient.DefaultRequestHeaders.Add("api-key", _config.ApiKey);
-        }
-
-        // Ensure collection exists
-        EnsureCollectionAsync().GetAwaiter().GetResult();
-    }
-
-    private async Task EnsureCollectionAsync()
-    {
-        try
-        {
-            var response = await _httpClient.GetAsync($"/collections/{_collectionName}");
-            if (response.IsSuccessStatusCode)
-            {
-                return;
-            }
-
-            // Create collection
-            var createRequest = new
-            {
-                vectors = new
-                {
-                    size = 1536, // Default embedding dimension
-                    distance = "Cosine"
-                }
-            };
-
-            await _httpClient.PutAsJsonAsync($"/collections/{_collectionName}", createRequest);
-        }
-        catch
-        {
-            // Collection might already exist or Qdrant is not available
         }
     }
 
@@ -131,7 +101,7 @@ public class QdrantVectorStore : IVectorStore
             searchRequest,
             ct);
 
-        response.EnsureSuccessStatusCode();
+        await response.EnsureSuccessWithContentAsync();
 
         var result = await response.Content.ReadFromJsonAsync<QdrantSearchResponse>(ct);
 
