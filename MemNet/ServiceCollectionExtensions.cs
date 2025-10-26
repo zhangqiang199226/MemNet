@@ -89,4 +89,34 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient<IEmbedder, T>();
         return services;
     }
+
+    /// <summary>
+    ///     Use Qdrant vector store
+    /// </summary>
+    public static IServiceCollection WithQdrant(
+        this IServiceCollection services)
+    {
+        services.AddHttpClient<IVectorStore, QdrantVectorStore>();
+        return services;
+    }
+
+    /// <summary>
+    ///     Use Milvus vector store
+    /// </summary>
+    public static IServiceCollection WithMilvus(
+        this IServiceCollection services)
+    {
+        services.AddHttpClient<IVectorStore, MilvusVectorStore>();
+        return services;
+    }
+
+    /// <summary>
+    ///     Use Chroma vector store
+    /// </summary>
+    public static IServiceCollection WithChroma(
+        this IServiceCollection services)
+    {
+        services.AddHttpClient<IVectorStore, ChromaVectorStore>();
+        return services;
+    }
 }

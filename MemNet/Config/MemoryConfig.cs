@@ -17,7 +17,7 @@ public class MemoryConfig
     /// <summary>
     /// Enable reranking
     /// </summary>
-    public bool EnableReranking { get; set; } = false;
+    public bool EnableReranking { get; set; } = true;
 
     /// <summary>
     /// History message limit
