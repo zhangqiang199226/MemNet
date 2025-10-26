@@ -10,6 +10,11 @@ namespace MemNet.Abstractions;
 public interface IEmbedder
 {
     /// <summary>
+    /// Get the vector dimension size for this embedder (detected automatically on first call)
+    /// </summary>
+    Task<int> GetVectorSizeAsync(CancellationToken ct = default);
+    
+    /// <summary>
     /// Generate vector embedding for text
     /// </summary>
     Task<float[]> EmbedAsync(string text, CancellationToken ct = default);

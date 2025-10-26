@@ -46,7 +46,7 @@ public class ChromaV2VectorStore : IVectorStore
         }
     }
 
-    public async Task EnsureCollectionExistsAsync(int vectorSize, bool allowRecreation = false, CancellationToken ct = default)
+    public async Task EnsureCollectionExistsAsync(int vectorSize, bool allowRecreation, CancellationToken ct = default)
     {
         // Step 1: Ensure Tenant exists
         await EnsureTenantExistsAsync(ct);

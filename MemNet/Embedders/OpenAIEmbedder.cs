@@ -38,6 +38,13 @@ public class OpenAIEmbedder : IEmbedder
         }
     }
 
+    public async Task<int> GetVectorSizeAsync(CancellationToken ct = default)
+    {
+        // Embed a test string to detect dimension dynamically
+        var testEmbedding = await EmbedAsync("test", ct);
+        return testEmbedding.Length;
+    }
+
     public async Task<float[]> EmbedAsync(string text, CancellationToken ct = default)
     {
         var request = new

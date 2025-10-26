@@ -41,7 +41,7 @@ public class QdrantVectorStore : IVectorStore
         }
     }
 
-    public async Task EnsureCollectionExistsAsync(int vectorSize, bool allowRecreation = false, CancellationToken ct = default)
+    public async Task EnsureCollectionExistsAsync(int vectorSize, bool allowRecreation, CancellationToken ct = default)
     {
         // Check if collection exists
         var response = await _httpClient.GetAsync($"/collections/{_collectionName}", ct);

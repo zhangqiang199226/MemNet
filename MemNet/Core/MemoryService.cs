@@ -32,6 +32,12 @@ public class MemoryService : IMemoryService
         _config = config.Value;
     }
 
+    public async Task InitializeAsync(bool allowRecreation = false, CancellationToken ct = default)
+    {
+        var vectorSize = await _embedder.GetVectorSizeAsync(ct);
+        await _vectorStore.EnsureCollectionExistsAsync(vectorSize, allowRecreation, ct);
+    }
+
     public async Task<AddMemoryResponse> AddAsync(AddMemoryRequest request, CancellationToken ct = default)
     {
         // 1. Combine message content

@@ -40,7 +40,7 @@ public class ChromaV1VectorStore : IVectorStore
         }
     }
 
-    public async Task EnsureCollectionExistsAsync(int vectorSize, bool allowRecreation = false, CancellationToken ct = default)
+    public async Task EnsureCollectionExistsAsync(int vectorSize, bool allowRecreation, CancellationToken ct = default)
     {
         // Try to get collection
         var response = await _httpClient.GetAsync($"/api/v1/collections/{_collectionName}", ct);

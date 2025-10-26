@@ -14,9 +14,9 @@ public interface IVectorStore
     /// Ensure collection exists with the specified vector size
     /// </summary>
     /// <param name="vectorSize">Vector dimension size</param>
-    /// <param name="allowRecreation">Allow recreation if collection exists with different configuration (default: true)</param>
+    /// <param name="allowRecreation">Allow recreation if collection exists with different configuration</param>
     /// <param name="ct">Cancellation token</param>
-    Task EnsureCollectionExistsAsync(int vectorSize, bool allowRecreation = false, CancellationToken ct = default);
+    Task EnsureCollectionExistsAsync(int vectorSize, bool allowRecreation, CancellationToken ct = default);
     
     /// <summary>
     /// Insert memories

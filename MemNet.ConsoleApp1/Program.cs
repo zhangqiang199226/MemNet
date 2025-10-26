@@ -31,6 +31,7 @@ services.Configure<ChromaVectorStoreConfig>(e =>
 
 await using var sp = services.BuildServiceProvider();
 var memoryService = sp.GetRequiredService<IMemoryService>();
+await memoryService.InitializeAsync(true);
 await memoryService.AddAsync(new AddMemoryRequest
 {
     Messages =
