@@ -31,7 +31,7 @@ public class MilvusVectorStore : IVectorStore
         // Configure HttpClient
         if (_httpClient.BaseAddress == null)
         {
-            _httpClient.BaseAddress = new Uri($"http://{_config.Host}:{_config.Port}");
+            _httpClient.BaseAddress = new Uri(_config.Endpoint);
         }
 
         if (!string.IsNullOrEmpty(_config.ApiKey))
@@ -345,4 +345,3 @@ public class MilvusVectorStore : IVectorStore
         public string? Hash { get; set; }
     }
 }
-

@@ -28,8 +28,7 @@ public class MemoryConfig
 public class VectorStoreConfig
 {
     public string Provider { get; set; } = "qdrant"; // qdrant, milvus, chroma, inmemory
-    public string Host { get; set; } = "localhost";
-    public int Port { get; set; } = 6333;
+    public string Endpoint { get; set; } = "http://localhost:6333";
     public string CollectionName { get; set; } = "memories";
     public string? ApiKey { get; set; }
 }
