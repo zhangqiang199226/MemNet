@@ -12,7 +12,7 @@ public class MemoryConfig
     /// <summary>
     /// Duplicate threshold (cosine similarity)
     /// </summary>
-    public float DuplicateThreshold { get; set; } = 0.9f;
+    public double DuplicateThreshold { get; set; } = 0.6;
 
     /// <summary>
     /// Enable reranking

@@ -32,6 +32,7 @@ services.Configure<ChromaVectorStoreConfig>(e =>
 await using var sp = services.BuildServiceProvider();
 var memoryService = sp.GetRequiredService<IMemoryService>();
 await memoryService.InitializeAsync(true);
+//await memoryService.DeleteAllAsync("user001");
 await memoryService.AddAsync(new AddMemoryRequest
 {
     Messages =
@@ -55,12 +56,19 @@ await memoryService.AddAsync(new AddMemoryRequest
     UserId = "user001"
 });
 
+
+Console.WriteLine("All memories");
+foreach (var item in await memoryService.GetAllAsync( "user001"))
+{
+    Console.WriteLine($"- {item.Data}");
+}
+Console.WriteLine("Search Results:");
+
 var resp = await memoryService.SearchAsync(new SearchMemoryRequest
 {
-    Query = "Am I old?",//""What do I like?", //"Am I old?",
+    Query = "What do I like?", //"Am I old?",
     UserId = "user001"
 });
-Console.WriteLine("Search Results:");
 foreach (var item in resp.ToArray())
 {
     Console.WriteLine($"- {item.Memory.Data}");

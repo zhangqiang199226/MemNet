@@ -39,27 +39,6 @@ public class OpenAIProvider : ILLMProvider
             _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_config.ApiKey}");
         }
     }
-    
-    public async Task<string> GenerateTextAsync(string systemPrompt, string message, CancellationToken ct = default)
-    {
-        var request = new
-        {
-            model = _config.Model,
-            messages = new[]
-            {
-                new { role = "system", content = systemPrompt },
-                new { role = "user", content = message }
-            },
-            response_format = new { type = "json_object" }
-        };
-
-        var response = await _httpClient.PostAsJsonAsync("chat/completions", request, ct);
-        await response.EnsureSuccessWithContentAsync();
-
-        var result =
-            await response.Content.ReadFromJsonAsync<ChatCompletionResponse>(ct);
-        return result?.Choices?[0].Message.Content?.Trim() ?? string.Empty;
-    }
 
     public async Task<List<ExtractedMemory>> ExtractMemoriesAsync(string message, CancellationToken ct = default)
     {
@@ -77,10 +56,32 @@ public class OpenAIProvider : ILLMProvider
                            Be concise and specific. Each memory should be a standalone fact.
                            """;
 
-        var content = await GenerateTextAsync(systemPrompt, message, ct);
+        var request = new
+        {
+            model = _config.Model,
+            messages = new[]
+            {
+                new { role = "system", content = systemPrompt },
+                new { role = "user", content = message }
+            },
+            response_format = new { type = "json_object" }
+        };
+
+        var content = await CompleteChatAsync(ct, request);
         var extraction =
             JsonSerializer.Deserialize<MemoryExtractionResult>(content);
         return extraction?.Memories ?? new List<ExtractedMemory>();
+    }
+
+    private async Task<string> CompleteChatAsync(CancellationToken ct, object request)
+    {
+        var response = await _httpClient.PostAsJsonAsync("chat/completions", request, ct);
+        await response.EnsureSuccessWithContentAsync();
+
+        var result =
+            await response.Content.ReadFromJsonAsync<ChatCompletionResponse>(ct);
+        var content = result?.Choices?[0].Message.Content?.Trim() ?? string.Empty;
+        return content;
     }
 
     public async Task<string> MergeMemoriesAsync(string existing, string newMemory, CancellationToken ct = default)
@@ -92,13 +93,23 @@ public class OpenAIProvider : ILLMProvider
                             New memory: {newMemory}
 
                             Rules:
-                            1. Preserve all factual information from both
-                            2. If they conflict, prefer the newer information
-                            3. Be concise but complete
-                            4. Return ONLY the merged memory text, no explanation
+                            1. Preserve all factual information from both.
+                            2. If they conflict, prefer the newer information.
+                            3. Merge them into a concise, and non-redundant factual summary, keeping all unique information.
+                            4. Return ONLY the merged memory text, no explanation.
+                            5. All of "I", "User", "My" and "Me" refer to the user.
                             """;
 
-        var content = await GenerateTextAsync(systemPrompt, "", ct);
+        var request = new
+        {
+            model = _config.Model,
+            messages = new[]
+            {
+                new { role = "system", content = systemPrompt }
+            }
+        };
+
+        var content = await CompleteChatAsync(ct, request);
         return content;
     }
 
@@ -127,7 +138,17 @@ public class OpenAIProvider : ILLMProvider
                              Only return indices of relevant memories, omit irrelevant ones.
                              """;
 
-        var content = await GenerateTextAsync(systemPrompt, "", ct);
+        var request = new
+        {
+            model = _config.Model,
+            messages = new[]
+            {
+                new { role = "system", content = systemPrompt },
+            },
+            response_format = new { type = "json_object" }
+        };
+
+        var content = await CompleteChatAsync(ct, request);
 
         if (string.IsNullOrWhiteSpace(content))
         {
