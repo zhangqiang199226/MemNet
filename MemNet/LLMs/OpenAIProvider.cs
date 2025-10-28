@@ -87,10 +87,7 @@ public class OpenAIProvider : ILLMProvider
     public async Task<string> MergeMemoriesAsync(string existing, string newMemory, CancellationToken ct = default)
     {
         var systemPrompt = $"""
-                            Merge these two memory statements into one coherent, accurate statement:
-
-                            Existing memory: {existing}
-                            New memory: {newMemory}
+                            You are a memory merging expert. You can merge two memory statements into one coherent, accurate statement.
 
                             Rules:
                             1. Preserve all factual information from both.
@@ -98,14 +95,26 @@ public class OpenAIProvider : ILLMProvider
                             3. Merge them into a concise, and non-redundant factual summary, keeping all unique information.
                             4. Return ONLY the merged memory text, no explanation.
                             5. All of "I", "User", "My" and "Me" refer to the user.
+                            
+                            Example:
+                            Existing Memory: I love jogging; 
+                            New Memory: My interest in jogging.
+                            Output: I love jogging.
                             """;
+        
+        string userMessage = $"""
+                             Existing Memory: "{existing}"
+
+                             New Memory: "{newMemory}"
+                             """;
 
         var request = new
         {
             model = _config.Model,
             messages = new[]
             {
-                new { role = "system", content = systemPrompt }
+                new { role = "system", content = systemPrompt },
+                new { role = "user", content = userMessage}
             }
         };
 

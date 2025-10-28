@@ -103,10 +103,10 @@ public static class ServiceCollectionExtensions
     /// <summary>
     ///     Use Milvus vector store
     /// </summary>
-    public static IServiceCollection WithMilvus(
+    public static IServiceCollection WithMilvusV2(
         this IServiceCollection services)
     {
-        services.AddHttpClient<IVectorStore, MilvusVectorStore>();
+        services.AddHttpClient<IVectorStore, MilvusV2VectorStore>();
         return services;
     }
 

@@ -16,9 +16,9 @@ services.AddMemNet(config =>
     config.LLM.Model = "gpt-5-nano";
     config.LLM.ApiKey = Environment.GetEnvironmentVariable("OpenAIChatKey");
 
-    config.EnableReranking = true;
-    config.VectorStore.Endpoint = "http://localhost:6333";
-}).WithQdrant();
+    //config.VectorStore.Endpoint = "http://localhost:6333";//Qdrant
+    config.VectorStore.Endpoint = "http://localhost:19530";//Milvus
+}).WithMilvusV2();//.WithQdrant();
     /*
     .WithChroma();
 services.Configure<ChromaVectorStoreConfig>(e =>
@@ -62,6 +62,8 @@ foreach (var item in await memoryService.GetAllAsync( "user001"))
 {
     Console.WriteLine($"- {item.Data}");
 }
+
+return;
 Console.WriteLine("Search Results:");
 
 var resp = await memoryService.SearchAsync(new SearchMemoryRequest
