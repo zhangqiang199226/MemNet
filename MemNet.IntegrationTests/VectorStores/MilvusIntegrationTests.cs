@@ -13,6 +13,12 @@ namespace MemNet.IntegrationTests.VectorStores;
 /// </summary>
 public class MilvusIntegrationTests : VectorStoreTestBase<MilvusV2VectorStore>
 {
+    
+    public MilvusIntegrationTests()
+    {
+        _addDelay = true;
+    }
+    
     protected override MilvusV2VectorStore CreateVectorStore()
     {
         var httpClient = new HttpClient();

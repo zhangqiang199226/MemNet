@@ -21,27 +21,27 @@ namespace MemNet.VectorStores;
 public class MilvusV2VectorStore : IVectorStore
 {
     private readonly HttpClient _httpClient;
-    private readonly VectorStoreConfig _config;
     private readonly string _collectionName;
 
+    
     public MilvusV2VectorStore(HttpClient httpClient, IOptions<MemoryConfig> config)
     {
         _httpClient = httpClient;
-        _config = config.Value.VectorStore;
-        _collectionName = _config.CollectionName;
+        var configVectorStore = config.Value.VectorStore;
+        _collectionName = configVectorStore.CollectionName;
 
         // Configure HttpClient
         if (_httpClient.BaseAddress == null)
         {
-            _httpClient.BaseAddress = new Uri(_config.Endpoint);
+            _httpClient.BaseAddress = new Uri(configVectorStore.Endpoint);
         }
 
-        if (!string.IsNullOrEmpty(_config.ApiKey))
+        if (!string.IsNullOrEmpty(configVectorStore.ApiKey))
         {
-            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_config.ApiKey}");
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {configVectorStore.ApiKey}");
         }
     }
-
+    
     public async Task EnsureCollectionExistsAsync(int vectorSize, bool allowRecreation, CancellationToken ct = default)
     {
         // Check if collection exists
@@ -356,6 +356,11 @@ public class MilvusV2VectorStore : IVectorStore
 
         [JsonPropertyName("message")]
         public string? Message { get; set; }
+    }
+    
+    private class MilvusVersionResponse
+    {
+        public string? Version { get; set; }
     }
 
     private class MilvusV2CollectionInfo

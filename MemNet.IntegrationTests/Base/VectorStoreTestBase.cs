@@ -17,6 +17,7 @@ public abstract class VectorStoreTestBase<TVectorStore> : IntegrationTestBase
     where TVectorStore : IVectorStore
 {
     protected abstract TVectorStore CreateVectorStore();
+    protected bool _addDelay = false;//For Milvus, this may be a delay needed for reading the previously written data.
 
     protected virtual async Task CleanupVectorStoreAsync(TVectorStore vectorStore)
     {
@@ -66,7 +67,7 @@ public abstract class VectorStoreTestBase<TVectorStore> : IntegrationTestBase
 
         // Insert memory
         await vectorStore.InsertAsync(new List<MemoryItem> { memory });
-
+        if(_addDelay) await Task.Delay(1000);
         // Retrieve by ID
         var retrieved = await vectorStore.GetAsync(memory.Id);
         retrieved.Should().NotBeNull();
@@ -97,7 +98,7 @@ public abstract class VectorStoreTestBase<TVectorStore> : IntegrationTestBase
         };
 
         await vectorStore.InsertAsync(memories);
-
+        if(_addDelay) await Task.Delay(1000);
         // Search for programming-related content
         var queryVector = await OpenAIFixture.Embedder.EmbedAsync("programming languages");
         var results = await vectorStore.SearchAsync(queryVector, userId, limit: 2);
@@ -132,7 +133,7 @@ public abstract class VectorStoreTestBase<TVectorStore> : IntegrationTestBase
         memory.UpdatedAt = DateTime.UtcNow;
 
         await vectorStore.UpdateAsync(new List<MemoryItem> { memory });
-
+        if(_addDelay) await Task.Delay(1000);
         // Verify update
         var retrieved = await vectorStore.GetAsync(memory.Id);
         retrieved.Should().NotBeNull();
@@ -155,14 +156,14 @@ public abstract class VectorStoreTestBase<TVectorStore> : IntegrationTestBase
         var memory = await CreateMemoryItem("Memory to delete", userId);
         
         await vectorStore.InsertAsync(new List<MemoryItem> { memory });
-
+        if(_addDelay) await Task.Delay(1000);
         // Verify it exists
         var retrieved = await vectorStore.GetAsync(memory.Id);
         retrieved.Should().NotBeNull();
 
         // Delete memory
         await vectorStore.DeleteAsync(memory.Id);
-
+        if(_addDelay) await Task.Delay(1000);
         // Verify it's deleted
         var afterDelete = await vectorStore.GetAsync(memory.Id);
         afterDelete.Should().BeNull();
@@ -189,7 +190,7 @@ public abstract class VectorStoreTestBase<TVectorStore> : IntegrationTestBase
             await CreateMemoryItem("User1 memory 2", user1),
             await CreateMemoryItem("User2 memory 1", user2)
         });
-
+        if(_addDelay) await Task.Delay(1000);
         // List user1's memories
         var user1Memories = await vectorStore.ListAsync(user1, limit: 100);
         user1Memories.Should().HaveCount(2);
@@ -224,7 +225,7 @@ public abstract class VectorStoreTestBase<TVectorStore> : IntegrationTestBase
 
         // Insert batch
         await vectorStore.InsertAsync(memories);
-
+        if(_addDelay) await Task.Delay(1000);
         // Verify all inserted
         var allMemories = await vectorStore.ListAsync(userId, limit: 100);
         allMemories.Should().HaveCount(batchSize);
