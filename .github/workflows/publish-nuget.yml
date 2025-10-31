@@ -91,37 +91,3 @@ jobs:
       with:
         name: nuget-packages
         path: ./artifacts/*.nupkg
-<Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <LangVersion>13</LangVersion>
-        <Nullable>enable</Nullable>
-        <IsPackable>false</IsPackable>
-        <IsTestProject>true</IsTestProject>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="coverlet.collector" Version="6.0.0" />
-        <PackageReference Include="FluentAssertions" Version="6.12.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-        <PackageReference Include="xunit" Version="2.6.2" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.4" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\MemNet\MemNet.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Update="appsettings.test.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-    </ItemGroup>
-
-</Project>
-

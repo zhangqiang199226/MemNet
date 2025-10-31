@@ -22,12 +22,6 @@ jobs:
           - 8000:8000
         env:
           ALLOW_RESET: TRUE
-        options: >-
-          --health-cmd "curl -f http://localhost:8000/api/v1/heartbeat || exit 1"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 10
-          --health-start-period 10s
 
       milvus:
         image: milvusdb/milvus:latest
@@ -37,24 +31,12 @@ jobs:
         env:
           ETCD_USE_EMBED: true
           COMMON_STORAGETYPE: local
-        options: >-
-          --health-cmd "curl -f http://localhost:9091/healthz || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 20
-          --health-start-period 30s
 
       qdrant:
         image: qdrant/qdrant:latest
         ports:
           - 6333:6333
           - 6334:6334
-        options: >-
-          --health-cmd "curl -f http://localhost:6333/healthz || exit 1"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 10
-          --health-start-period 10s
 
     steps:
     - name: Checkout code
