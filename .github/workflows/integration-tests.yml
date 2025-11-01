@@ -35,11 +35,12 @@ jobs:
           - 19530:19530
           - 9091:9091
         env:
-          MILVUS_MODE: standalone
           ETCD_USE_EMBED: true
           MINIO_USE_EMBED: true
           ROCKSMQ_USE_EMBED: true
         options: >-
+          --entrypoint ""
+          milvus run standalone
           --health-cmd "curl -f http://localhost:9091/healthz || exit 1"
           --health-interval 10s
           --health-timeout 5s
