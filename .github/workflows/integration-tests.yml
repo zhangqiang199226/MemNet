@@ -35,11 +35,6 @@ jobs:
           - 19530:19530
           - 9091:9091
         options: >-
-          --health-interval=30s
-          --health-timeout=20s
-          --health-retries=3
-          --health-start-period=90s
-          --entrypoint "milvus"
           -- milvus run standalone
 
     steps:
