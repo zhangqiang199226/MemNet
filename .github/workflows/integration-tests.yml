@@ -52,6 +52,8 @@ jobs:
 
     - name: Build
       run: dotnet build --no-restore --configuration Release
+    - name: Wait for Services to be Ready
+      run: sleep 10
     - name: Run Integration Tests
       env:
         EMBEDDER_API_KEY: ${{ secrets.EMBEDDER_API_KEY }}
