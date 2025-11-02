@@ -13,8 +13,8 @@
         <PackageProjectUrl>https://github.com/yangzhongke/MemNet</PackageProjectUrl>
         <RepositoryUrl>https://github.com/yangzhongke/MemNet</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <PackageLicenseExpression>LGPL-2.1</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseUrl>https://github.com/yangzhongke/MemNet/blob/main/LICENSE</PackageLicenseUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
