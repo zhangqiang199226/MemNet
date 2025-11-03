@@ -39,7 +39,7 @@ public class RedisVectorStore : IVectorStore
     {
         var ft = _db.FT();
 
-        // 使用 _LIST 命令检查索引是否存在
+        // Use _LIST command to check if index exists
         RedisResult[] indexes = ft._List();
         bool indexExists = indexes.Any(e=>_indexName.Equals((string)e!));
 
@@ -53,7 +53,7 @@ public class RedisVectorStore : IVectorStore
             return;
         }
 
-        // 索引不存在,创建它
+        // Index does not exist, create it
         await CreateIndexAsync(ft, vectorSize);
     }
 
@@ -307,4 +307,3 @@ public class RedisVectorStore : IVectorStore
                    .Replace("@", "\\@");
     }
 }
-

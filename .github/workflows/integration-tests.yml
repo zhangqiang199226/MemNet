@@ -30,7 +30,7 @@ jobs:
           - 6334:6334
 
       redis:
-        image: redis/redis:latest
+        image: redis:latest
         ports:
           - 6379:6379
 
