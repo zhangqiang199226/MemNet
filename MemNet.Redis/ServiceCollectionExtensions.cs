@@ -1,5 +1,6 @@
 using System;
 using MemNet.Abstractions;
+using MemNet.Config;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 
@@ -10,6 +11,52 @@ namespace MemNet.Redis;
 /// </summary>
 public static class RedisServiceCollectionExtensions
 {
+    /// <summary>
+    /// Add MemNet with Redis vector store support using VectorStoreConfig
+    /// </summary>
+    /// <param name="services">Service collection</param>
+    /// <param name="configureOptions">Optional Redis configuration options</param>
+    public static IServiceCollection WithMemNetRedis(
+        this IServiceCollection services,
+        Action<ConfigurationOptions>? configureOptions = null)
+    {
+        services.AddSingleton<IConnectionMultiplexer>(sp =>
+        {
+            var config = sp.GetRequiredService<VectorStoreConfig>();
+
+            if (string.IsNullOrEmpty(config.Endpoint))
+            {
+                throw new InvalidOperationException("VectorStoreConfig.Endpoint is required for Redis connection");
+            }
+
+            var options = ConfigurationOptions.Parse(config.Endpoint);
+
+            if (!string.IsNullOrEmpty(config.ApiKey))
+            {
+                // Parse ApiKey in "UserName:Password" format
+                var parts = config.ApiKey!.Split([':'], 2);
+                if (parts.Length == 2)
+                {
+                    options.User = parts[0];
+                    options.Password = parts[1];
+                }
+                else
+                {
+                    // Fallback: treat as password only
+                    options.Password = config.ApiKey;
+                }
+            }
+
+            configureOptions?.Invoke(options);
+
+            return ConnectionMultiplexer.Connect(options);
+        });
+
+        services.AddSingleton<IVectorStore, RedisVectorStore>();
+
+        return services;
+    }
+
     /// <summary>
     /// Add MemNet with Redis vector store support
     /// </summary>
@@ -38,4 +85,3 @@ public static class RedisServiceCollectionExtensions
         return services;
     }
 }
-
