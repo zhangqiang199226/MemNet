@@ -3,6 +3,7 @@ using HttpMataki.NET.Auto;
 using MemNet;
 using MemNet.Abstractions;
 using MemNet.Models;
+using MemNet.Redis;
 using MemNet.VectorStores;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,7 +24,7 @@ services.AddMemNet(config =>
     //config.VectorStore.Endpoint = "http://localhost:19530";//Milvus
     //config.VectorStore.CollectionName = "c3";
     config.VectorStore.Endpoint = "http://localhost:8000";
-});//.WithMilvusV2();//.WithQdrant();
+});//.WithMemNetRedis("localhost:6379");//.WithMilvusV2();//.WithQdrant();
 /*
 .WithChromaV2();
 
