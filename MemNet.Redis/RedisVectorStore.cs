@@ -37,6 +37,11 @@ public class RedisVectorStore : IVectorStore
 
     public async Task EnsureCollectionExistsAsync(int vectorSize, bool allowRecreation, CancellationToken ct = default)
     {
+        if (!RedisHelper.IsVectorSupported(_redis))
+        {
+            throw new NotSupportedException("The Redis server does not support vector, please use a higher version.");
+        }
+        
         var ft = _db.FT();
 
         // Use _LIST command to check if index exists
