@@ -58,6 +58,27 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
+    ///     Add MemNet services (using Jina Embed)
+    /// </summary>
+    public static IServiceCollection AddMemNetWithJinaV2ZH(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        // Register configuration
+        services.Configure<MemoryConfig>(configuration.GetSection("MemNet"));
+
+        // Register default implementations
+        services.AddHttpClient<ILLMProvider, OpenAIProvider>();
+        services.AddScoped<IEmbedder, JinaEmbederV2ZH>();
+     
+        services.AddSingleton<IVectorStore, InMemoryVectorStore>();
+        // Register core services
+        services.AddScoped<IMemoryService, MemoryService>();
+
+        return services;
+    }
+
+    /// <summary>
     ///     Use custom vector store
     /// </summary>
     public static IServiceCollection WithVectorStore<T>(

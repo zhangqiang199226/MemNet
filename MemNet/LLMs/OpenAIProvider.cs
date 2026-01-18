@@ -68,8 +68,8 @@ public class OpenAIProvider : ILLMProvider
         };
 
         var content = await CompleteChatAsync(ct, request);
-        var extraction =
-            JsonSerializer.Deserialize<MemoryExtractionResult>(content);
+        var extraction =  JsonSerializer.Deserialize<MemoryExtractionResult>(content);
+     
         return extraction?.Memories ?? new List<ExtractedMemory>();
     }
 
@@ -77,7 +77,7 @@ public class OpenAIProvider : ILLMProvider
     {
         var response = await _httpClient.PostAsJsonAsync("chat/completions", request, ct);
         await response.EnsureSuccessWithContentAsync();
-
+        
         var result =
             await response.Content.ReadFromJsonAsync<ChatCompletionResponse>(ct);
         var content = result?.Choices?[0].Message.Content?.Trim() ?? string.Empty;
@@ -164,8 +164,9 @@ public class OpenAIProvider : ILLMProvider
             return results;
         }
 
-        var ranking = JsonSerializer.Deserialize<RankingResult>(content);
-        if (ranking?.RankedIndices == null)
+        var ranking  = JsonSerializer.Deserialize<RankingResult>(content);
+       
+        if ( ranking?.RankedIndices == null)
         {
             return results;
         }
