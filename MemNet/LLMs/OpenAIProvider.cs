@@ -146,7 +146,7 @@ public class OpenAIProvider : ILLMProvider
 
                              Only return indices of relevant memories, omit irrelevant ones.
                              """;
-
+        //"ranked_indices": [0, 2, 1, ...]
         var request = new
         {
             model = _config.Model,

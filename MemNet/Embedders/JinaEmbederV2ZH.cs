@@ -1,5 +1,7 @@
 ﻿using BERTTokenizers.Base;
 using MemNet.Abstractions;
+using MemNet.Config;
+using Microsoft.Extensions.Options;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using System;
@@ -16,9 +18,14 @@ namespace MemNet.Embedders
 {
     public class JinaEmbederV2ZH : IEmbedder
     {
-        private readonly string modelDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "onnx-models", "Jna");
         private InferenceSession? _inferenceSession;
         private MyTokenizer? tokenizer = null;
+        private JinaEmbederConfig _config;
+
+        public JinaEmbederV2ZH(IOptions<MemoryConfig> config)
+        {
+            _config = config.Value.JinaEmbedder;
+        }
 
         public bool IsModelReady => _inferenceSession != null;
 
@@ -35,9 +42,10 @@ namespace MemNet.Embedders
             {
                 LogSeverityLevel = OrtLoggingLevel.ORT_LOGGING_LEVEL_INFO
             };
-
-            _inferenceSession = new InferenceSession($@"{modelDir}\model.onnx", sessionOptions);
-            tokenizer ??= new MyTokenizer($@"{modelDir}\vocab.txt");
+            string model = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _config.Model);
+            string vcab = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _config.Vocab);
+            _inferenceSession = new InferenceSession(model, sessionOptions);
+            tokenizer ??= new MyTokenizer(vcab);
         }
          private async Task<float[][]> GetEmbeddingsAsync(params string[] sentences)
         {
