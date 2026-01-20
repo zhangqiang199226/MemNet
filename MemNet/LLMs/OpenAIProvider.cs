@@ -68,6 +68,10 @@ public class OpenAIProvider : ILLMProvider
         };
 
         var content = await CompleteChatAsync(ct, request);
+        if (string.IsNullOrWhiteSpace(content) || !(content.StartsWith("{") && (content.EndsWith("}"))))
+        {
+            return new List<ExtractedMemory>();
+        }
         var extraction =  JsonSerializer.Deserialize<MemoryExtractionResult>(content);
      
         return extraction?.Memories ?? new List<ExtractedMemory>();
@@ -159,14 +163,15 @@ public class OpenAIProvider : ILLMProvider
 
         var content = await CompleteChatAsync(ct, request);
 
-        if (string.IsNullOrWhiteSpace(content))
+        if (string.IsNullOrWhiteSpace(content) || !(content.StartsWith("{") && (content.EndsWith("}"))))
         {
-            return results;
+            //return results;
+            return new List<MemorySearchResult>();
         }
 
         var ranking  = JsonSerializer.Deserialize<RankingResult>(content);
        
-        if ( ranking?.RankedIndices == null)
+        if ( ranking?.RankedIndices == null )
         {
             return results;
         }
