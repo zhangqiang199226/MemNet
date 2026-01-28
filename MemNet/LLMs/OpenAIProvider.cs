@@ -64,16 +64,33 @@ public class OpenAIProvider : ILLMProvider
                 new { role = "system", content = systemPrompt },
                 new { role = "user", content = message }
             },
-            response_format = new { type = "json_object" }
+            response_format = new { type = "json_object" },
+            max_tokens=27648
         };
 
         var content = await CompleteChatAsync(ct, request);
-        if (string.IsNullOrWhiteSpace(content) || !(content.StartsWith("{") && (content.EndsWith("}"))))
+
+        int end = content.IndexOf("</think>");
+        if (end > 0)
+        {
+            content = content.Substring(end);
+            int start = content.IndexOf("{");
+           if (start > 0)
+                content = content.Substring(start);
+        }
+        if (string.IsNullOrWhiteSpace(content))
         {
             return new List<ExtractedMemory>();
         }
-        var extraction =  JsonSerializer.Deserialize<MemoryExtractionResult>(content);
-     
+        MemoryExtractionResult? extraction = null;
+        try
+        {
+             extraction = JsonSerializer.Deserialize<MemoryExtractionResult>(content);
+        }
+        catch (Exception ex)
+        {
+            
+        }
         return extraction?.Memories ?? new List<ExtractedMemory>();
     }
 
@@ -85,7 +102,7 @@ public class OpenAIProvider : ILLMProvider
         var result =
             await response.Content.ReadFromJsonAsync<ChatCompletionResponse>(ct);
         var content = result?.Choices?[0].Message.Content?.Trim() ?? string.Empty;
-        return content;
+       return content;
     }
 
     public async Task<string> MergeMemoriesAsync(string existing, string newMemory, CancellationToken ct = default)
@@ -158,25 +175,42 @@ public class OpenAIProvider : ILLMProvider
             {
                 new { role = "system", content = systemPrompt },
             },
-            response_format = new { type = "json_object" }
+            response_format = new { type = "json_object" },
+            max_tokens = 27648
         };
 
         var content = await CompleteChatAsync(ct, request);
+        int end = content.IndexOf("</think>");
+        if (end > 0)
+        {
+            content = content.Substring(end);
+            int start = content.IndexOf("{");
+            if (start > 0)
+                content = content.Substring(start);
+        }
 
-        if (string.IsNullOrWhiteSpace(content) || !(content.StartsWith("{") && (content.EndsWith("}"))))
+        if (string.IsNullOrWhiteSpace(content))
         {
             //return results;
             return new List<MemorySearchResult>();
         }
-
-        var ranking  = JsonSerializer.Deserialize<RankingResult>(content);
-       
-        if ( ranking?.RankedIndices == null )
+        RankingResult? ranking = null;
+        var reranked = new List<MemorySearchResult>();
+        try
         {
-            return results;
+            ranking = JsonSerializer.Deserialize<RankingResult>(content);
+        }
+        catch (Exception ex)
+        {
+            
         }
 
-        var reranked = new List<MemorySearchResult>();
+        if ( ranking?.RankedIndices == null )
+        {
+            //return results;
+            return new List<MemorySearchResult>();
+        }
+               
         foreach (var index in ranking.RankedIndices)
         {
             if (index >= 0 && index < results.Count)
