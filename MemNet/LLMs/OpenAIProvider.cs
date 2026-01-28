@@ -64,10 +64,19 @@ public class OpenAIProvider : ILLMProvider
                 new { role = "system", content = systemPrompt },
                 new { role = "user", content = message }
             },
-            response_format = new { type = "json_object" }
+            response_format = new { type = "json_object" },
+            max_tokens=32767
         };
 
         var content = await CompleteChatAsync(ct, request);
+
+        int end = content.IndexOf("</think>");
+        if (end > 0)
+        {
+            content = content.Substring(end);
+            int start = content.IndexOf("{");
+            content = content.Substring(start);
+        }
         if (string.IsNullOrWhiteSpace(content) || !(content.StartsWith("{") && (content.EndsWith("}"))))
         {
             return new List<ExtractedMemory>();
@@ -85,7 +94,7 @@ public class OpenAIProvider : ILLMProvider
         var result =
             await response.Content.ReadFromJsonAsync<ChatCompletionResponse>(ct);
         var content = result?.Choices?[0].Message.Content?.Trim() ?? string.Empty;
-        return content;
+       return content;
     }
 
     public async Task<string> MergeMemoriesAsync(string existing, string newMemory, CancellationToken ct = default)
@@ -158,10 +167,18 @@ public class OpenAIProvider : ILLMProvider
             {
                 new { role = "system", content = systemPrompt },
             },
-            response_format = new { type = "json_object" }
+            response_format = new { type = "json_object" },
+            max_tokens = 32767
         };
 
         var content = await CompleteChatAsync(ct, request);
+        int end = content.IndexOf("</think>");
+        if (end > 0)
+        {
+            content = content.Substring(end);
+            int start = content.IndexOf("{");
+            content = content.Substring(start);
+        }
 
         if (string.IsNullOrWhiteSpace(content) || !(content.StartsWith("{") && (content.EndsWith("}"))))
         {
