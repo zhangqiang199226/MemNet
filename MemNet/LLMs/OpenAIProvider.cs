@@ -70,14 +70,23 @@ public class OpenAIProvider : ILLMProvider
 
         var content = await CompleteChatAsync(ct, request);
 
-        int end = content.IndexOf("</think>");
-        if (end > 0)
+        int think = content.IndexOf("</think>");
+        if (think > 0)
         {
-            content = content.Substring(end);
+            content = content.Substring(think);
             int start = content.IndexOf("{");
-           if (start > 0)
-                content = content.Substring(start);
+            int end = content.LastIndexOf("}") + 1;
+            if (start >= 0 && end > start)
+                content = content.Substring(start, end - start);
         }
+        else
+        {
+            int start = content.IndexOf("{");
+            int end = content.LastIndexOf("}") + 1;
+            if (start >= 0 && end > start)
+                content = content.Substring(start,end - start);
+        }
+
         if (string.IsNullOrWhiteSpace(content))
         {
             return new List<ExtractedMemory>();
@@ -180,13 +189,22 @@ public class OpenAIProvider : ILLMProvider
         };
 
         var content = await CompleteChatAsync(ct, request);
-        int end = content.IndexOf("</think>");
-        if (end > 0)
+
+        int think = content.IndexOf("</think>");
+        if (think > 0)
         {
-            content = content.Substring(end);
+            content = content.Substring(think);
             int start = content.IndexOf("{");
-            if (start > 0)
-                content = content.Substring(start);
+            int end = content.LastIndexOf("}") + 1;
+            if (start >= 0 && end > start)
+                content = content.Substring(start, end - start);
+        }
+        else
+        {
+            int start = content.IndexOf("{");
+            int end = content.LastIndexOf("}") + 1;
+            if (start >= 0 && end > start)
+                content = content.Substring(start, end - start);
         }
 
         if (string.IsNullOrWhiteSpace(content))
