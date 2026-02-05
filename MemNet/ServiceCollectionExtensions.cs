@@ -69,7 +69,7 @@ public static class ServiceCollectionExtensions
 
         // Register default implementations
         services.AddHttpClient<ILLMProvider, OpenAIProvider>();
-        services.AddScoped<IEmbedder, JinaEmbederV2ZH>();
+        services.AddSingleton<IEmbedder, JinaEmbederV2ZH>();
      
         services.AddSingleton<IVectorStore, InMemoryVectorStore>();
         // Register core services
@@ -108,6 +108,16 @@ public static class ServiceCollectionExtensions
         where T : class, IEmbedder
     {
         services.AddHttpClient<IEmbedder, T>();
+        return services;
+    }
+    /// <summary>
+    ///     Use Local embedder
+    /// </summary>
+    public static IServiceCollection WithLocalEmbedder<T>(
+    this IServiceCollection services)
+    where T : class, IEmbedder
+    {
+        services.AddSingleton<IEmbedder, T>();
         return services;
     }
 

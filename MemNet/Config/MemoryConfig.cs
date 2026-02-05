@@ -38,6 +38,7 @@ public class LLMConfig
     public string Model { get; set; } = "gpt-4";
     public string? ApiKey { get; set; }
     public string? Endpoint { get; set; }
+    public int MaxTokens { get; set; } = 3000;
 }
 
 public class EmbedderConfig

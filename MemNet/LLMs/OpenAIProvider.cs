@@ -40,7 +40,7 @@ public class OpenAIProvider : ILLMProvider
         }
     }
 
-    public async Task<List<ExtractedMemory>> ExtractMemoriesAsync(string message, CancellationToken ct = default)
+    public async Task<List<ExtractedMemory>> ExtractMemoriesAsync(string message,CancellationToken ct = default)
     {
         var systemPrompt = """
                            You are a memory extraction expert. Extract key facts, preferences, and important context from the conversation.
@@ -48,7 +48,7 @@ public class OpenAIProvider : ILLMProvider
                            {
                                "memories": [
                                    {"data": "extracted fact 1"},
-                                   {"data": "extracted fact 2"}
+                                   {"data": "extracted fact 2"},
                                ]
                            }
 
@@ -65,7 +65,7 @@ public class OpenAIProvider : ILLMProvider
                 new { role = "user", content = message }
             },
             response_format = new { type = "json_object" },
-            max_tokens=27648
+            max_tokens= _config.MaxTokens
         };
 
         var content = await CompleteChatAsync(ct, request);
@@ -185,7 +185,7 @@ public class OpenAIProvider : ILLMProvider
                 new { role = "system", content = systemPrompt },
             },
             response_format = new { type = "json_object" },
-            max_tokens = 27648
+            max_tokens = _config.MaxTokens
         };
 
         var content = await CompleteChatAsync(ct, request);
